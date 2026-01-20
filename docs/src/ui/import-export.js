@@ -352,12 +352,15 @@ function renderAllCards() {
 let cards = [];
 
 // === Initialisation principale ===
-async function init() {
+  async function init() {
   const csvPath = getSelectedCsvPath();
 
   if (csvPath) {
     try {
-      const response = await fetch(csvPath);
+        // Résoudre le chemin CSV en une URL absolue.
+        // Ceci est crucial pour le protocole file:// où les requêtes fetch relatives peuvent être restreintes.
+        const resolvedCsvPath = new URL(csvPath, window.location.href).href;
+        const response = await fetch(resolvedCsvPath);
       if (!response.ok) throw new Error(`Fichier non trouvé : ${csvPath}`);
       const text = await response.text();
       const normalised = text.replace(/^\uFEFF/, '');

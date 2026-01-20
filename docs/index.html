@@ -85,7 +85,14 @@
         if (!select) return;
         
         if (window.leitnerApp?.ui?.populateCSVSelector) {
-            window.leitnerApp.ui.populateCSVSelector(csvFiles, { selectedName: preferredName });
+            const resolvedCsvFiles = csvFiles.map(file => {
+                let resolvedUrl = file.download_url;
+                if (!resolvedUrl.startsWith('http://') && !resolvedUrl.startsWith('https://') && !resolvedUrl.startsWith('file://')) {
+                    resolvedUrl = new URL(resolvedUrl, window.location.href).href;
+                }
+                return { ...file, download_url: resolvedUrl };
+            });
+            window.leitnerApp.ui.populateCSVSelector(resolvedCsvFiles, { selectedName: preferredName });
         } else {
             // Fallback
             select.innerHTML = '';
@@ -94,7 +101,11 @@
             } else {
                 csvFiles.forEach(file => {
                     const option = document.createElement('option');
-                    option.value = getNoCacheUrl(file.download_url); // On ajoute l'anti-cache ici aussi
+                    let resolvedUrl = file.download_url;
+                    if (!resolvedUrl.startsWith('http://') && !resolvedUrl.startsWith('https://') && !resolvedUrl.startsWith('file://')) {
+                        resolvedUrl = new URL(resolvedUrl, window.location.href).href;
+                    }
+                    option.value = getNoCacheUrl(resolvedUrl); // On ajoute l'anti-cache ici aussi
                     option.textContent = file.name;
                     option.dataset.name = file.name;
                     if (file.name === preferredName) option.selected = true;
@@ -163,11 +174,7 @@
       function openImportExport() {
         const select = document.getElementById('csv-selector');
         const selectedOption = select?.selectedOptions?.[0];
-        
         let selectedFile = selectedOption?.value;
-        if (!selectedFile || !selectedFile.startsWith('http')) {
-             selectedFile = selectedOption?.dataset?.downloadUrl;
-        }
     
         if (!selectedFile) {
           alert('Veuillez sélectionner un fichier CSV valide.');

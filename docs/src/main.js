@@ -618,8 +618,8 @@ const CoreApp = {
             
             // Logique robuste pour gérer les CSV mal formés (virgules dans les réponses)
             // et les numéros de boîte hors limites (ex: 200 -> 1)
-            let question = matches[0] || 'Question vide';
-            let qImage = matches[1] || '';
+            let questionContent = matches[0] || '';
+            let questionImage = matches[1] || '';
             let answer = '';
             let aImage = '';
             let box = 1;
@@ -638,26 +638,34 @@ const CoreApp = {
                 // Tout ce qui est entre l'image question et l'image réponse est la réponse
                 // (permet de gérer les virgules qui auraient scindé la réponse en plusieurs colonnes)
                 const answerParts = matches.slice(2, matches.length - 3);
-                answer = answerParts.join(', ') || 'Réponse vide';
+                answer = answerParts.join(', ') || '';
+                aImage = matches[matches.length - 3] || '';
             } else {
                 // Fallback standard si moins de colonnes que prévu
-                answer = matches[2] || 'Réponse vide';
+                answer = matches[2] || '';
                 aImage = matches[3] || '';
                 const rawBox = parseInt(matches[4]);
                 box = (!isNaN(rawBox) && rawBox >= 1 && rawBox <= 5) ? rawBox : 1;
                 lastReview = matches[5] || '';
             }
 
-            return { id: index, question, qImage, answer, aImage, box, lastReview };
+            // Appliquer le texte par défaut uniquement si le contenu et l'image sont tous deux absents
+            if (!questionContent && !questionImage) {
+                questionContent = 'Question vide';
+            }
+            if (!answer && !aImage) {
+                answer = 'Réponse vide';
+            }
+
+            return { id: index, question: questionContent, qImage: questionImage, answer, aImage, box, lastReview };
         });
     },
 
     getNextReviewDateForBox: (boxNum, cards) => {
         const now = new Date();
         let earliestDate = null;
-        let pendingCount = 0;
+        let pendingCount = 0; // Nombre de cartes à réviser maintenant
         const intervalDays = BOX_INTERVALS[boxNum] || 1;
-
         cards.forEach(card => {
             if (!card.lastReview) {
                 pendingCount++;
@@ -891,14 +899,26 @@ const CoreApp = {
         };
         qSection.parentNode.insertBefore(quitBtn, qSection);
 
-        let qHtml = `<p class="text-xl break-words whitespace-pre-wrap">${card.question || '...'}</p>`;
+        let qHtml = '';
         const qImgUrl = CoreApp.buildImageUrl(card.qImage, 'q');
-        if(qImgUrl) qHtml += `<img src="${qImgUrl}" class="max-w-full h-auto mt-4 rounded shadow-sm mx-auto max-h-60 object-contain" onerror="this.style.display='none'">`;
+
+        if (card.question) {
+            qHtml += `<p class="text-xl break-words whitespace-pre-wrap">${card.question}</p>`;
+        } else if (!qImgUrl) { // Afficher "..." uniquement si ni texte ni image
+            qHtml += `<p class="text-xl break-words whitespace-pre-wrap">...</p>`;
+        }
+        if (qImgUrl) qHtml += `<img src="${qImgUrl}" class="max-w-full h-auto mt-4 rounded shadow-sm mx-auto max-h-60 object-contain" onerror="this.style.display='none'">`;
         document.getElementById('question-content').innerHTML = qHtml;
 
-        let aHtml = `<p class="text-xl break-words whitespace-pre-wrap">${card.answer || '...'}</p>`;
+        let aHtml = '';
         const aImgUrl = CoreApp.buildImageUrl(card.aImage, 'a');
-        if(aImgUrl) aHtml += `<img src="${aImgUrl}" class="max-w-full h-auto mt-4 rounded shadow-sm mx-auto max-h-60 object-contain" onerror="this.style.display='none'">`;
+
+        if (card.answer) {
+            aHtml += `<p class="text-xl break-words whitespace-pre-wrap">${card.answer}</p>`;
+        } else if (!aImgUrl) { // Afficher "..." uniquement si ni texte ni image
+            aHtml += `<p class="text-xl break-words whitespace-pre-wrap">...</p>`;
+        }
+        if (aImgUrl) aHtml += `<img src="${aImgUrl}" class="max-w-full h-auto mt-4 rounded shadow-sm mx-auto max-h-60 object-contain" onerror="this.style.display='none'">`;
         document.getElementById('answer-content').innerHTML = aHtml;
         
         setTimeout(() => document.getElementById('show-answer-btn').focus(), 50);
