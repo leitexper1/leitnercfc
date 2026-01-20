@@ -765,7 +765,9 @@ const CoreApp = {
                     let dateInfo = '';
                     if(card.lastReview) {
                         const d = new Date(card.lastReview);
-                        dateInfo = `<span class="text-xs text-gray-400 block mt-1">Vu : ${d.toLocaleDateString()} ${d.toLocaleTimeString()}</span>`;
+                        if (!isNaN(d.getTime())) {
+                            dateInfo = `<span class="text-xs text-gray-400 block mt-1">Vu : ${d.toLocaleDateString()} ${d.toLocaleTimeString()}</span>`;
+                        }
                     }
 
                     let diffBadge = '';
@@ -789,6 +791,8 @@ const CoreApp = {
         if (!filename) return null;
         if (filename.startsWith('http') || filename.startsWith('data:')) return filename;
         
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+        
         const c = APP_STATE.config;
         const folder = type === 'q' ? 'images_questions' : 'images_reponses';
         
@@ -801,6 +805,10 @@ const CoreApp = {
         
         // Encodage des segments pour l'URL (garde les slashes)
         const encodedPath = cleanPath.split('/').map(encodeURIComponent).join('/');
+        
+        if (isLocal) {
+            return encodedPath;
+        }
         
         let basePath = c.path.endsWith('/') ? c.path.slice(0, -1) : c.path;
         if (basePath.endsWith('/csv')) basePath = basePath.slice(0, -4);

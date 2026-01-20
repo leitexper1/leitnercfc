@@ -652,8 +652,12 @@ export class UIManager {
             document.getElementById('answer-content').appendChild(imgElement);
         }
 
+        const lastReviewDate = new Date(card.lastReview);
+        const lastReviewText = !isNaN(lastReviewDate.getTime()) && card.lastReview
+            ? lastReviewDate.toLocaleString('fr-FR')
+            : 'Jamais';
         document.getElementById('last-reviewed').textContent =
-            `Dernière révision: ${new Date(card.lastReview).toLocaleString('fr-FR')}`;
+            `Dernière révision: ${lastReviewText}`;
 
         const difficultySelect = document.getElementById('answer-difficulty');
         if (difficultySelect) {
