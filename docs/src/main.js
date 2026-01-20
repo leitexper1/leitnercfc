@@ -717,7 +717,7 @@ const CoreApp = {
                 if(cards.length) {
                     SessionManager.start(CoreApp.csvData.filename, cards);
                     CoreApp.startReview();
-                } else alert('Boîtevide.');
+                } else alert('Boîte___vide.');
             });
             container.appendChild(div);
         });
