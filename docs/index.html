@@ -22,21 +22,28 @@
         // 1. Essayer le fichier manifeste (généré par GitHub Action)
         try {
             const response = await fetch(getNoCacheUrl('csv-files.json'));
-            if (response.ok) {
+            if (response.ok) { // Si le manifeste existe et est valide
                 const jsonFiles = await response.json();
                 jsonFiles.forEach(f => {
-                    files.push({ name: f, download_url: f, source: 'manifest' });
-                    seen.add(f);
+                    const filenameOnly = f.split('/').pop(); // Extraire seulement le nom du fichier pour une déduplication cohérente
+                    if (!seen.has(filenameOnly)) {
+                        files.push({ name: filenameOnly, download_url: f, source: 'manifest' });
+                        seen.add(filenameOnly);
+                    }
                 });
             }
         } catch (e) { console.log("Pas de manifeste trouvé."); }
 
-        // 2. SCAN AUTOMATIQUE DU DOSSIER (Pour le local)
-        // Permet de détecter les nouveaux fichiers sans lancer de script manuel
-        // Note : On scanne la racine './' ET un dossier 'csv/' car index.html peut masquer le listing racine.
-        const pathsToScan = ['./', 'csv/'];
+        // 2. SCAN AUTOMATIQUE DU DOSSIER 'csv/' (Pour le local, si le manifeste est vide ou absent)
+        // Cela permet de détecter les nouveaux fichiers sans lancer de script manuel.
+        // On ne scanne que le dossier 'csv/' pour éviter les doublons avec le manifeste
+        // et pour s'assurer que seuls les fichiers de ce dossier sont listés.
+        const pathsToScan = ['csv/'];
 
         for (const basePath of pathsToScan) {
+            // Si le manifeste a déjà fourni des fichiers, on ne fait pas de scan local pour éviter les doublons
+            if (files.length > 0 && basePath === 'csv/') continue;
+
             try {
                 const response = await fetch(basePath);
                 if (response.ok) {
@@ -44,19 +51,20 @@
                     const regex = /href=["']?([^"'>?]+\.csv)["'>]/gi;
                     let match;
                     while ((match = regex.exec(text)) !== null) {
-                        const link = decodeURIComponent(match[1]);
-                        const name = link.split('/').pop(); // Garde uniquement le nom du fichier
+                        let link = decodeURIComponent(match[1]);
+                        const filenameOnly = link.split('/').pop(); // Extraire seulement le nom du fichier
                         
-                        if (!seen.has(name)) {
-                            // Si on scanne le dossier 'csv/', on ajoute le préfixe au chemin de téléchargement
-                            let downloadUrl = link;
-                            if (basePath !== './' && !link.includes('/')) {
-                                downloadUrl = basePath + link;
+                        if (!seen.has(filenameOnly)) {
+                            // S'assurer que downloadUrl est préfixé par 'csv/' si ce n'est pas déjà le cas
+                            let downloadUrl = link; // Par défaut, le lien trouvé
+                            if (!downloadUrl.startsWith('csv/') && !downloadUrl.includes('/')) { // Si c'est juste un nom de fichier comme "fichier.csv"
+                                downloadUrl = basePath + link; // Préfixer avec "csv/"
                             }
-                            
-                            files.push({ name: name, download_url: downloadUrl, source: 'auto-detect' });
-                            seen.add(name);
-                            console.log(`Fichier détecté (${basePath}) : ${name}`);
+                            // Si le lien est déjà "csv/fichier.csv", c'est bon.
+
+                            files.push({ name: filenameOnly, download_url: downloadUrl, source: 'auto-detect' });
+                            seen.add(filenameOnly);
+                            console.log(`Fichier détecté (${basePath}) : ${filenameOnly}`);
                         }
                     }
                 }
@@ -65,9 +73,11 @@
         
         if (files.length === 0) throw new Error("Aucun fichier CSV trouvé.\n\nConseil : Créez un dossier 'csv' dans 'docs' et placez-y vos fichiers pour une détection automatique garantie.");
         
-        // Dédoublonnage et tri
-        const unique = [...new Map(files.map(item => [item.name, item])).values()];
-        return unique.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+        // Le Set 'seen' gère déjà la déduplication de base par filenameOnly.
+        // La déduplication finale par Map assure que si, d'une manière ou d'une autre, différents objets
+        // avec le même filenameOnly ont été ajoutés, un seul reste.
+        // Cette étape est principalement pour la robustesse, car 'seen' devrait empêcher la plupart des doublons.
+        return [...new Map(files.map(item => [item.name, item])).values()].sort((a, b) => a.name.localeCompare(b.name, 'fr'));
       }
     
       // --- LOGIQUE DE REMPLISSAGE DU SELECT ---

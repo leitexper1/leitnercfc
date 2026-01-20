@@ -174,12 +174,38 @@ const UI = {
         const select = document.getElementById('csv-selector');
         if (!select) return;
         select.innerHTML = '<option value="">-- Choisir un paquet --</option>';
-        files.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+        
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+
+        // Filtrer pour ne garder que les fichiers du dossier csv/
+        const filteredFiles = files.filter(f => {
+            const p = f.publicPath || f.download_url || '';
+            const normalizedPath = p.replace(/\\/g, '/');
+            
+            if (isLocal) {
+                return normalizedPath.includes('csv/') && normalizedPath.toLowerCase().endsWith('.csv');
+            }
+            
+            return /(?:^|\/)csv\/[^/]+\.csv$/i.test(normalizedPath);
+        });
+
+        // Déduplication stricte pour éviter les doublons
+        const uniqueFiles = [];
+        const seen = new Set();
+        filteredFiles.forEach(f => {
+            const normalizedName = f.name ? f.name.toLowerCase().trim() : '';
+            if (normalizedName && !seen.has(normalizedName)) {
+                seen.add(normalizedName);
+                uniqueFiles.push(f);
+            }
+        });
+
+        uniqueFiles.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
 
         const groups = {};
         const orphans = [];
 
-        files.forEach(file => {
+        uniqueFiles.forEach(file => {
             let cleanName = file.name.replace('.csv', '');
             if (cleanName.startsWith('csv/')) cleanName = cleanName.substring(4);
             

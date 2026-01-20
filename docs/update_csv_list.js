@@ -10,15 +10,6 @@ console.log(`🔍 Scan des fichiers CSV...`);
 
 let csvFiles = [];
 
-// 1. Scan racine docs/ (pour compatibilité)
-try {
-    if (fs.existsSync(docsDir)) {
-        const rootFiles = fs.readdirSync(docsDir)
-            .filter(f => path.extname(f).toLowerCase() === '.csv');
-        csvFiles = [...csvFiles, ...rootFiles];
-    }
-} catch (e) { console.error("Erreur scan racine:", e); }
-
 // 2. Scan sous-dossier docs/csv/ (recommandé)
 try {
     if (fs.existsSync(csvSubDir)) {
