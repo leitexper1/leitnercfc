@@ -521,7 +521,7 @@ export class UIManager {
         csvFiles.forEach((file) => {
             const option = document.createElement('option');
             option.value = file.name;
-            option.textContent = file.name;
+            option.textContent = file.name.replace(/^csv\//, '');
 
             if (file.download_url) {
                 option.dataset.downloadUrl = file.download_url;

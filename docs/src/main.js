@@ -180,7 +180,9 @@ const UI = {
         const orphans = [];
 
         files.forEach(file => {
-            const cleanName = file.name.replace('.csv', '');
+            let cleanName = file.name.replace('.csv', '');
+            if (cleanName.startsWith('csv/')) cleanName = cleanName.substring(4);
+            
             if (cleanName.includes('_')) {
                 const parts = cleanName.split('_');
                 const category = parts[0];
@@ -766,7 +768,10 @@ const CoreApp = {
         // Encodage des segments pour l'URL (garde les slashes)
         const encodedPath = cleanPath.split('/').map(encodeURIComponent).join('/');
         
-        const basePath = c.path.endsWith('/') ? c.path.slice(0, -1) : c.path;
+        let basePath = c.path.endsWith('/') ? c.path.slice(0, -1) : c.path;
+        if (basePath.endsWith('/csv')) basePath = basePath.slice(0, -4);
+        else if (basePath === 'csv') basePath = '';
+
         const repoPath = basePath ? `${basePath}/` : '';
         
         return `https://raw.githubusercontent.com/${c.owner}/${c.repo}/${c.branch}/${repoPath}${encodedPath}`;

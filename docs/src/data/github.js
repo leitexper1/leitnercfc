@@ -343,6 +343,12 @@ export class GitHubManager {
 
         let fullPath = this.config.repoPath || '';
 
+        if (fullPath.endsWith('/csv/') || fullPath.endsWith('/csv')) {
+            fullPath = fullPath.replace(/\/csv\/?$/, '');
+        } else if (fullPath === 'csv/' || fullPath === 'csv') {
+            fullPath = '';
+        }
+
         if (fullPath && !fullPath.endsWith('/')) {
             fullPath += '/';
         }
