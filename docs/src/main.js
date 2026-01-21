@@ -821,6 +821,8 @@ const CoreApp = {
 
     validateImageStructure: (filename) => {
         const baseName = filename.replace(/\.csv$/i, '');
+        // Règle : le dossier peut être le nom complet ou le préfixe avant le premier underscore
+        const prefix = baseName.split('_')[0];
         const warnings = [];
 
         CoreApp.csvData.forEach((card, index) => {
@@ -839,8 +841,16 @@ const CoreApp = {
                     subDir = parts[0];
                 }
 
-                if (subDir && !baseName.startsWith(subDir)) {
-                    warnings.push(`Ligne ${index + 1} (${type}): Le dossier "${subDir}" ne correspond pas au fichier "${baseName}".`);
+                if (subDir) {
+                    const lowerSub = subDir.toLowerCase();
+                    const lowerBase = baseName.toLowerCase();
+                    const lowerPrefix = prefix.toLowerCase();
+                    
+                    // On accepte si le fichier commence par le dossier (ex: dossier "art" pour fichier "art_test.csv")
+                    // OU si le dossier commence par le préfixe (ex: dossier "art_visuel" pour fichier "art_test.csv")
+                    if (!lowerBase.startsWith(lowerSub) && !lowerSub.startsWith(lowerPrefix)) {
+                        warnings.push(`Ligne ${index + 1} (${type}): Le dossier "${subDir}" ne correspond pas au fichier "${baseName}" (Attendu: "${prefix}..." ou "${baseName}").`);
+                    }
                 }
             };
 
@@ -850,7 +860,7 @@ const CoreApp = {
 
         if (warnings.length > 0) {
             console.warn('Validation Structure Images:', warnings);
-            alert(`⚠️ Structure des dossiers d'images incorrecte.\n\nPour le fichier "${filename}", les images doivent être dans un sous-répertoire correspondant au nom du fichier (ex: images_questions/${baseName}/...).\n\n${warnings.length} incohérence(s) détectée(s).`);
+            alert(`⚠️ Structure des dossiers d'images incorrecte.\n\nPour le fichier "${filename}", les images doivent être dans un sous-répertoire correspondant au nom du fichier ou à son préfixe (ex: images_questions/${prefix}/...).\n\n${warnings.length} incohérence(s) détectée(s).`);
         }
     },
 

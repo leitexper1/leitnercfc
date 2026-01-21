@@ -508,7 +508,7 @@
                             <p>Vous ne pouvez pas modifier MON site, mais vous pouvez en faire une copie pour VOUS.</p>
                             <ol class="list-decimal list-inside ml-2 mt-1 space-y-1 bg-purple-50 p-2 rounded">
                                 <li>Connectez-vous à GitHub.</li>
-                                <li>Allez sur mon projet : <a href="https://github.com/leitexper1/testleitnercodex" target="_blank" class="text-blue-600 underline font-bold">leitexper1/testleitnercodex</a>.</li>
+                                <li>Allez sur mon projet : <a href="https://github.com/leitexper1/leitnercfc" target="_blank" class="text-blue-600 underline font-bold">https://github.com/leitexper1/leitnercfc</a>.</li>
                                 <li>En haut à droite, cherchez le bouton <strong>"Fork"</strong> et cliquez dessus.</li>
                                 <li>Cliquez sur "Create fork".</li>
                                 <li><strong>Important :</strong> Vous êtes maintenant sur <em>votre</em> page projet (votre copie). Gardez cet onglet ouvert ou mettez-le en favori. C'est ici que vous déposerez vos fichiers plus tard.</li>
@@ -532,13 +532,44 @@
                             <p>Avant d'envoyer quoi que ce soit, organisez vos fichiers sur votre ordinateur en respectant <strong>scrupuleusement</strong> cette structure :</p>
                             <div class="bg-gray-100 p-3 rounded border-l-4 border-red-500 font-mono text-sm mt-2">
                                 docs/ <span class="text-gray-500 italic">(Dossier principal)</span><br>
-                                ├── HISTOIRE_Rome.csv <span class="text-blue-600 font-bold">(CATEGORIE_Nom.csv)</span><br>
-                                ├── ELECTRO_Triphase.csv(pas d'accents<br>
+                                ├── csv/ <span class="text-gray-500 italic">(TOUS les fichiers .csv)</span><br>
+                                │   ├── ART_test_definitions.csv<br>
+                                │   ├── ELECTRO_formules_1.csv<br>
+                                │   ├── MATERIEL_essai_flashcards_leitner.csv<br>
+                                │   ├── NIBT_nibt_definitions.csv<br>
+                                │   ├── SIA_questions_2011_2023.csv<br>
+                                │   └── TELECOM_acronymes.csv<br>
                                 ├── images_questions/ <span class="text-gray-500 italic">(Dossier OBLIGATOIRE)</span><br>
-                                │   └── chat.jpg<br>
+                                │   ├── ART/ <span class="text-blue-600 font-bold">(préfixe avant le 1er _)</span><br>
+                                │   │   └── ART_test_definitions_01.jpg<br>
+                                │   ├── ELECTRO/<br>
+                                │   │   └── ELECTRO_formules_1_01.jpg<br>
+                                │   ├── MATERIEL/<br>
+                                │   │   └── MATERIEL_essai_flashcards_leitner_01.jpg<br>
+                                │   ├── NIBT/<br>
+                                │   │   └── NIBT_nibt_definitions_01.jpg<br>
+                                │   ├── SIA/<br>
+                                │   │   └── SIA_questions_2011_2023_01.jpg<br>
+                                │   └── TELECOM/<br>/
+                                │       └── TELECOM_acronymes_01.jpg<br>
                                 └── images_reponses/ <span class="text-gray-500 italic">(Dossier OBLIGATOIRE)</span><br>
-                                    └── chien.jpg
+                                    ├── ART/<br>
+                                    │   └── ART_test_definitions_rep_01.jpg<br>
+                                    ├── ELECTRO/<br>
+                                    │   └── ELECTRO_formules_1_rep_01.jpg<br>
+                                    ├── MATERIEL/<br>
+                                    │   └── MATERIEL_essai_flashcards_leitner_rep_01.jpg<br>
+                                    ├── NIBT/<br>
+                                    │   └── NIBT_nibt_definitions_rep_01.jpg<br>
+                                    ├── SIA/<br>
+                                    │   └── SIA_questions_2011_2023_rep_01.jpg<br>
+                                    └── TELECOM/<br>
+                                         └── 01_2025_01_18_34_54_65.jpg<br>
+                                           └── 02_2025_01_18_45_23_12.jpg<br>                                    
                             </div>
+                            <p class="text-xs text-red-500 mt-2 font-bold">
+                                ⚠️ Règle d'or : Pas d'espaces, pas d'accents, pas de caractères spéciaux (comme :) dans les noms de fichiers !
+                            </p>
                             <div class="mt-3 bg-yellow-50 p-2 rounded border border-yellow-200 text-sm">
                                 <strong>💡 Astuce de génie pour les catégories :</strong><br>
                                 Pour créer des dossiers dans le menu, utilisez le tiret du bas <code>_</code> dans le nom du fichier.<br>
