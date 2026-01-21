@@ -150,4 +150,4 @@ ce site et ses 5 boîtes de Leitner font le travail.**
 ✨ Se souvenir plus  
 ✨ Apprendre pour de vrai  
 
-Remarque du concepteur OM (2025-2026): Sans l'IA jamais je n'aurais été capable de mettre autant d'emojis dans le readme.md, dans le prompt (Claude, Gemini, Copilot) j'ai demandé  "...le format de sortie de cette description doit être du markdown même avec des petit émojis ridicules que tu mets partout, mais qui sont tellement accrocheurs..."
+Remarque du concepteur OM (2025-2026): Sans l'IA jamais je n'aurais été capable de mettre autant d'emojis dans le readme.md, dans le prompt (Claude, Gemini, Copilot) j'ai demandé  "...le format de sortie de cette description doit être du markdown même avec des petit émojis ridicules que tu mets partout, mais qui sont tellement accrocheurs...", si vous voulez connaître le système de "Sebastian Leitner" https://fr.wikipedia.org/wiki/Syst%C3%A8me_Leitner
