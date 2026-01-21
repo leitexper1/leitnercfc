@@ -604,9 +604,15 @@ const CoreApp = {
     parseCSV: (text) => {
         const lines = text.split(/\r\n|\n|\r/).filter(l => l.trim());
         if (lines.length === 0) return [];
+
+        // Auto-détection du séparateur (priorité au point-virgule si présent dans l'en-tête)
+        const header = lines[0];
+        const separator = (header.indexOf(';') > -1 && header.split(';').length >= header.split(',').length) ? ';' : ',';
+
         return lines.slice(1).map((line, index) => {
             const matches = [];
-            const regex = /(?:^|,)(?:"([^"]*)"|([^",]*))/g;
+            // Regex dynamique basée sur le séparateur détecté
+            const regex = new RegExp(`(?:^|${separator})(?:"([^"]*)"|([^"${separator}]*))`, 'g');
             let match;
             let safety = 0;
             while ((match = regex.exec(line)) !== null) {

@@ -42,7 +42,7 @@
 
         for (const basePath of pathsToScan) {
             // Si le manifeste a déjà fourni des fichiers, on ne fait pas de scan local pour éviter les doublons
-            if (files.length > 0 && basePath === 'csv/') continue;
+            // if (files.length > 0 && basePath === 'csv/') continue;
 
             try {
                 const response = await fetch(basePath);

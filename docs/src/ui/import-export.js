@@ -102,6 +102,10 @@ function parseCsvRows(text) {
   let currentRow = [];
   let inQuotes = false;
 
+  // Détection simple du séparateur sur la première ligne
+  const firstLine = text.split('\n')[0] || '';
+  const separator = (firstLine.indexOf(';') > -1 && firstLine.split(';').length >= firstLine.split(',').length) ? ';' : ',';
+
   for (let i = 0; i < text.length; i++) {
     const char = text[i];
 
@@ -115,7 +119,7 @@ function parseCsvRows(text) {
       continue;
     }
 
-    if (char === ',' && !inQuotes) {
+    if (char === separator && !inQuotes) {
       currentRow.push(currentField);
       currentField = '';
       continue;
@@ -157,7 +161,7 @@ function parseCsvText(text) {
   ];
 
   const header = rows[0].map(cell => cell.trim());
-  if (header.join(',') !== expectedHeader.join(',')) {
+  if (header.join(',') !== expectedHeader.join(',') && header.join(';') !== expectedHeader.join(';')) {
     throw new Error('En-tête CSV invalide.');
   }
 
@@ -397,7 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
       'box_number',
       'last_reviewed'
     ].join(',');
-
+    // Note: Ici on garde la virgule pour l'export "legacy" de cette page spécifique, ou on peut changer pour ';'
     const rows = cards.map(c =>
       [
         escapeCsv(c.question_content),
@@ -406,10 +410,10 @@ document.addEventListener('DOMContentLoaded', () => {
         escapeCsv(c.answer_content_image),
         escapeCsv(c.box_number),
         escapeCsv(c.last_reviewed)
-      ].join(',')
+      ].join(';') // Changement ici pour utiliser le point-virgule
     );
 
-    const csvContent = [header, ...rows].join('\n');
+    const csvContent = [header.replace(/,/g, ';'), ...rows].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

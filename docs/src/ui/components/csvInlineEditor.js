@@ -17,7 +17,7 @@ function escapeCsvValue(value) {
     return `"${stringValue.replace(/"/g, '""')}"`;
 }
 
-function parseCsvLine(line) {
+function parseCsvLine(line, separator = ',') {
     const values = [];
     let current = '';
     let inQuotes = false;
@@ -32,7 +32,7 @@ function parseCsvLine(line) {
             } else {
                 inQuotes = !inQuotes;
             }
-        } else if ((char === ',' || char === ';') && !inQuotes) {
+        } else if (char === separator && !inQuotes) {
             values.push(current);
             current = '';
         } else {
@@ -211,13 +211,17 @@ export class CSVInlineEditor {
             return;
         }
 
-        const headers = parseCsvLine(rows[0]);
+        // Détection du séparateur
+        const headerLine = rows[0];
+        const separator = (headerLine.indexOf(';') > -1 && headerLine.split(';').length >= headerLine.split(',').length) ? ';' : ',';
+
+        const headers = parseCsvLine(headerLine, separator);
         const hasHeaders = headers.length === CSV_FIELDS.length && CSV_FIELDS.every((field, index) => headers[index] === field.header);
         const dataRows = hasHeaders ? rows.slice(1) : rows;
 
         this.previewCache.clear();
         this.data = dataRows.map((row) => {
-            const values = parseCsvLine(row);
+            const values = parseCsvLine(row, separator);
             const mapped = {};
             CSV_FIELDS.forEach((field, index) => {
                 const rawValue = values[index] ?? '';
@@ -310,7 +314,8 @@ export class CSVInlineEditor {
      * @returns {void}
      */
     handleExport() {
-        const headerLine = CSV_FIELDS.map(field => field.header).join(',');
+        const separator = ';';
+        const headerLine = CSV_FIELDS.map(field => field.header).join(separator);
         const contentLines = this.data.map((row) => {
             const values = CSV_FIELDS.map((field) => {
                 if (field.key === 'box') {
@@ -318,7 +323,7 @@ export class CSVInlineEditor {
                 }
                 return escapeCsvValue(row[field.key] ?? '');
             });
-            return values.join(',');
+            return values.join(separator);
         });
         const content = [headerLine, ...contentLines].join('\n');
         const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
@@ -350,7 +355,8 @@ export class CSVInlineEditor {
             return;
         }
 
-        const headerLine = CSV_FIELDS.map(field => field.header).join(',');
+        const separator = ';';
+        const headerLine = CSV_FIELDS.map(field => field.header).join(separator);
         const dataLines = this.data.map((row) => {
             const values = CSV_FIELDS.map((field) => {
                 if (field.key === 'box') {
@@ -358,7 +364,7 @@ export class CSVInlineEditor {
                 }
                 return escapeCsvValue(row[field.key] ?? '');
             });
-            return values.join(',');
+            return values.join(separator);
         });
         this.elements.textarea.value = [headerLine, ...dataLines].join('\n');
     }

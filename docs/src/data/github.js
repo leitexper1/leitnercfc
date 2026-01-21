@@ -169,6 +169,7 @@ export class GitHubManager {
 
         const baseUrl = new URL('.', window.location.href);
         const manifestCandidates = ['csv-files.json', 'csv_manifest.json', '__csv_manifest.json'];
+        const foundFiles = [];
 
         for (const manifestName of manifestCandidates) {
             try {
@@ -193,7 +194,8 @@ export class GitHubManager {
 
                 if (files.length > 0) {
                     this.localBaseUrl = baseUrl.href;
-                    return files;
+                    files.forEach(f => foundFiles.push(f));
+                    break;
                 }
             } catch (error) {
                 console.warn('Lecture du manifeste CSV local échouée', manifestName, error);
@@ -203,8 +205,6 @@ export class GitHubManager {
         // Scan root and csv/ subdirectory for local files
         const scanTargets = [baseUrl.href];
         try { scanTargets.push(new URL('csv/', baseUrl).href); } catch(e) {}
-
-        const foundFiles = [];
 
         for (const targetUrl of scanTargets) {
             try {
@@ -230,7 +230,9 @@ export class GitHubManager {
 
                 Array.from(candidates).forEach(candidate => {
                     const entry = this.buildLocalFileEntry(candidate, targetUrl);
-                    if (entry) foundFiles.push(entry);
+                    if (entry && !foundFiles.some(f => f.name === entry.name)) {
+                        foundFiles.push(entry);
+                    }
                 });
             } catch (error) {
                 console.warn('Scan local échoué pour', targetUrl, error);
@@ -266,7 +268,10 @@ export class GitHubManager {
         }
         
         // Vérifier l'en-tête
-        const headers = lines[0].split(',').map(h => h.trim());
+        const headerLine = lines[0];
+        const separator = (headerLine.indexOf(';') > -1 && headerLine.split(';').length >= headerLine.split(',').length) ? ';' : ',';
+
+        const headers = headerLine.split(separator).map(h => h.trim());
         const expectedHeaders = [
             'question_content',
             'question_content_image',
@@ -283,7 +288,7 @@ export class GitHubManager {
         // Parser les données
         const importedCards = [];
         for (let i = 1; i < lines.length; i++) {
-            const values = this.parseCSVLine(lines[i]);
+            const values = this.parseCSVLine(lines[i], separator);
             if (values.length < 6) continue;
             
             importedCards.push({
@@ -300,7 +305,7 @@ export class GitHubManager {
         return importedCards;
     }
     
-    parseCSVLine(line) {
+    parseCSVLine(line, separator = ',') {
         const values = [];
         let current = '';
         let inQuotes = false;
@@ -310,7 +315,7 @@ export class GitHubManager {
             
             if (char === '"') {
                 inQuotes = !inQuotes;
-            } else if (char === ',' && !inQuotes) {
+            } else if (char === separator && !inQuotes) {
                 values.push(current);
                 current = '';
             } else {

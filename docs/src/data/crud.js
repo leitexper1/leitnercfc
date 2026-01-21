@@ -175,7 +175,8 @@ export class CRUDManager {
         }
         
         // Entête CSV selon le format demandé
-        let csvContent = "question_content,question_content_image,answer_content,answer_content_image,box_number,last_reviewed\n";
+        const separator = ';'; // On passe au point-virgule pour les exports
+        let csvContent = `question_content${separator}question_content_image${separator}answer_content${separator}answer_content_image${separator}box_number${separator}last_reviewed\n`;
         
         const escapeValue = (text = '') => `"${String(text).replace(/"/g, '""')}"`;
         const formatImageValue = (value, type) => {
@@ -213,7 +214,7 @@ export class CRUDManager {
                 escapeValue(Number.isFinite(Number(card.box)) ? String(Math.trunc(Number(card.box))) : '1'),
                 escapeValue(formatLastReview(card.lastReview))
             ];
-            csvContent += row.join(',') + '\n';
+            csvContent += row.join(separator) + '\n';
         });
         
         // Créer un blob et un lien de téléchargement
