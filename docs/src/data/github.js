@@ -200,41 +200,46 @@ export class GitHubManager {
             }
         }
 
-        try {
-            const response = await fetch(baseUrl.href, { cache: 'no-store' });
-            if (!response.ok) {
-                return [];
-            }
+        // Scan root and csv/ subdirectory for local files
+        const scanTargets = [baseUrl.href];
+        try { scanTargets.push(new URL('csv/', baseUrl).href); } catch(e) {}
 
-            const contentType = response.headers.get('content-type') || '';
-            if (!/text\//i.test(contentType)) {
-                return [];
-            }
+        const foundFiles = [];
 
-            const body = await response.text();
-            const candidates = new Set();
-            const linkRegex = /href=["']?([^"'>\s]+\.(?:csv))["'\s>]/gi;
-            let match;
-            while ((match = linkRegex.exec(body)) !== null) {
-                candidates.add(match[1]);
-            }
+        for (const targetUrl of scanTargets) {
+            try {
+                const response = await fetch(targetUrl, { cache: 'no-store' });
+                if (!response.ok) continue;
 
-            body.split(/\s+/).forEach((token) => {
-                if (/\.csv$/i.test(token)) {
-                    candidates.add(token.replace(/["'>]/g, ''));
+                const contentType = response.headers.get('content-type') || '';
+                if (!/text\//i.test(contentType)) continue;
+
+                const body = await response.text();
+                const candidates = new Set();
+                const linkRegex = /href=["']?([^"'>\s]+\.(?:csv))["'\s>]/gi;
+                let match;
+                while ((match = linkRegex.exec(body)) !== null) {
+                    candidates.add(match[1]);
                 }
-            });
 
-            const files = Array.from(candidates)
-                .map(candidate => this.buildLocalFileEntry(candidate, baseUrl))
-                .filter(Boolean);
+                body.split(/\s+/).forEach((token) => {
+                    if (/\.csv$/i.test(token)) {
+                        candidates.add(token.replace(/["'>]/g, ''));
+                    }
+                });
 
-            if (files.length > 0) {
-                this.localBaseUrl = baseUrl.href;
-                return files;
+                Array.from(candidates).forEach(candidate => {
+                    const entry = this.buildLocalFileEntry(candidate, targetUrl);
+                    if (entry) foundFiles.push(entry);
+                });
+            } catch (error) {
+                console.warn('Scan local échoué pour', targetUrl, error);
             }
-        } catch (error) {
-            console.warn('Découverte des CSV locaux échouée', error);
+        }
+
+        if (foundFiles.length > 0) {
+            this.localBaseUrl = baseUrl.href;
+            return foundFiles;
         }
 
         return [];
