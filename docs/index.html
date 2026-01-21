@@ -530,43 +530,13 @@
                         <section>
                             <h4 class="font-bold text-lg text-red-600 mb-2">Étape 4 : Préparation sur votre ordinateur 📂</h4>
                             <p>Avant d'envoyer quoi que ce soit, organisez vos fichiers sur votre ordinateur en respectant <strong>scrupuleusement</strong> cette structure :</p>
-                            <div class="bg-gray-100 p-3 rounded border-l-4 border-red-500 font-mono text-sm mt-2">
-                                docs/ <span class="text-gray-500 italic">(Dossier principal)</span><br>
-                                ├── csv/ <span class="text-gray-500 italic">(TOUS les fichiers .csv)</span><br>
-                                │   ├── ART_test_definitions.csv<br>
-                                │   ├── ELECTRO_formules_1.csv<br>
-                                │   ├── MATERIEL_essai_flashcards_leitner.csv<br>
-                                │   ├── NIBT_nibt_definitions.csv<br>
-                                │   ├── SIA_questions_2011_2023.csv<br>
-                                │   └── TELECOM_acronymes.csv<br>
-                                ├── images_questions/ <span class="text-gray-500 italic">(Dossier OBLIGATOIRE)</span><br>
-                                │   ├── ART/ <span class="text-blue-600 font-bold">(préfixe avant le 1er _)</span><br>
-                                │   │   └── ART_test_definitions_01.jpg<br>
-                                │   ├── ELECTRO/<br>
-                                │   │   └── ELECTRO_formules_1_01.jpg<br>
-                                │   ├── MATERIEL/<br>
-                                │   │   └── MATERIEL_essai_flashcards_leitner_01.jpg<br>
-                                │   ├── NIBT/<br>
-                                │   │   └── NIBT_nibt_definitions_01.jpg<br>
-                                │   ├── SIA/<br>
-                                │   │   └── SIA_questions_2011_2023_01.jpg<br>
-                                │   └── TELECOM/<br>/
-                                │       └── TELECOM_acronymes_01.jpg<br>
-                                └── images_reponses/ <span class="text-gray-500 italic">(Dossier OBLIGATOIRE)</span><br>
-                                    ├── ART/<br>
-                                    │   └── ART_test_definitions_rep_01.jpg<br>
-                                    ├── ELECTRO/<br>
-                                    │   └── ELECTRO_formules_1_rep_01.jpg<br>
-                                    ├── MATERIEL/<br>
-                                    │   └── MATERIEL_essai_flashcards_leitner_rep_01.jpg<br>
-                                    ├── NIBT/<br>
-                                    │   └── NIBT_nibt_definitions_rep_01.jpg<br>
-                                    ├── SIA/<br>
-                                    │   └── SIA_questions_2011_2023_rep_01.jpg<br>
-                                    └── TELECOM/<br>
-                                         └── 01_2025_01_18_34_54_65.jpg<br>
-                                           └── 02_2025_01_18_45_23_12.jpg<br>                                    
-                            </div>
+                            <p>Conseil d'ami : un nom de fichier pour une question....."nom_fichier_Q.jpg", pour une réponse....."nom_fichier_R.jpg".</p>
+                            <p>Et pas comme dans l'image... éviter les fichiers trop longs...pffff !!!</p>
+                            <img
+                                src="images_guides/leitnercfc.jpg"
+                                alt="Structure de dossiers et fichiers à respecter"
+                                class="w-full max-w-4xl mx-auto rounded border border-gray-300 shadow-sm"
+                            >
                             <p class="text-xs text-red-500 mt-2 font-bold">
                                 ⚠️ Règle d'or : Pas d'espaces, pas d'accents, pas de caractères spéciaux (comme :) dans les noms de fichiers !
                             </p>
@@ -585,11 +555,13 @@
                             <ol class="list-decimal list-inside ml-2 mt-1 space-y-1 bg-green-50 p-2 rounded">
                                 <li>Retournez sur l'onglet GitHub de <strong>votre projet</strong> (créé à l'étape 2).</li>
                                 <li>Cliquez sur le dossier <strong>docs</strong> dans la liste des fichiers.</li>
+                                <li>Cliquez sur le dossier <strong>csv</strong>. Pour votre fichier que vous venez de créer, Exemple : <code>LITTERATURE_questions_matu.CSV</code></li>
                                 <li>En haut à droite, cliquez sur <strong>"Add file"</strong> puis <strong>"Upload files"</strong>.</li>
-                                <li>Glissez votre fichier CSV (et vos dossiers d'images si besoin) depuis votre ordinateur vers la zone grise.</li>
-                                <li>Validez en cliquant sur le bouton vert <strong>"Commit changes"</strong>.</li>
+                                <li>Glissez votre fichier CSV depuis votre ordinateur vers la zone <strong>Drag files here to add them to your repository</strong></li>
+                                <li>Validez en cliquant sur le bouton vert <strong>"Commit changes"</strong>. (Pour les geek.ettes) Vous pouvez ajouter des commentaires...</li>
+                                <li>Pour vos images il faut "remonter" avec les ".." (dossier parent) pour voir les dossiers d'images. Et refaire les actions ci-dessus.</li>
                             </ol>
-                            <p class="mt-2 font-bold text-green-700">Bravo ! Votre site personnel va détecter ce nouveau fichier et l'ajoutera automatiquement à la liste des paquets disponibles.</p>
+                            <p class="mt-2 font-bold text-green-700">Bravo ! Votre site personnel va détecter ce nouveau fichier et l'ajoutera automatiquement à la liste déroulante des fichiers csv disponibles.</p>
                         </section>
 
                         <section>

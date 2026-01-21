@@ -6,7 +6,8 @@ https://leitexper1.github.io/leitnercfc/
 Apprendre ne consiste pas à relire des notes à l’infini ❌  
 Apprendre, c’est **se souvenir au bon moment** ✅  
 
-C’est exactement ce que fait le **système de Leitner**, et c’est pour cela que ce site existe 🚀 (https://leitexper1.github.io/leitnercfc/)
+C’est exactement ce que fait le **système de Leitner**, et c’est pour cela que ce site existe 🚀
+(https://leitexper1.github.io/leitnercfc/)
 
 ---
 
