@@ -94,6 +94,7 @@ const UI = {
         UI.loadConfig();
         UI.setupAdminListeners();
         UI.setupTabListeners();
+        UI.setupImageZoom();
     },
 
     loadConfig: () => {
@@ -168,6 +169,34 @@ const UI = {
         });
         const defaultTab = document.getElementById('tab-review-trigger');
         if(defaultTab) defaultTab.click();
+    },
+
+    setupImageZoom: () => {
+        if (document.getElementById('image-zoom-modal')) return;
+        const modal = document.createElement('div');
+        modal.id = 'image-zoom-modal';
+        modal.className = 'fixed inset-0 bg-black bg-opacity-90 z-[9999] hidden flex items-center justify-center cursor-zoom-out p-4';
+        modal.onclick = () => modal.classList.add('hidden');
+        
+        const img = document.createElement('img');
+        img.className = 'max-w-full max-h-full object-contain rounded shadow-2xl';
+        modal.appendChild(img);
+        document.body.appendChild(modal);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                modal.classList.add('hidden');
+            }
+        });
+    },
+
+    openZoom: (src) => {
+        const modal = document.getElementById('image-zoom-modal');
+        const img = modal.querySelector('img');
+        if (modal && img) {
+            img.src = src;
+            modal.classList.remove('hidden');
+        }
     },
 
     populateCSVSelector: function(files, options = {}) {
@@ -605,9 +634,26 @@ const CoreApp = {
         const lines = text.split(/\r\n|\n|\r/).filter(l => l.trim());
         if (lines.length === 0) return [];
 
-        // Auto-détection du séparateur (priorité au point-virgule si présent dans l'en-tête)
-        const header = lines[0];
-        const separator = (header.indexOf(';') > -1 && header.split(';').length >= header.split(',').length) ? ';' : ',';
+        // Algorithme de détection robuste du séparateur (analyse statistique sur 10 lignes)
+        // Permet de gérer les fichiers mixtes (Header avec virgules, Data avec points-virgules)
+        const detectSeparator = (sampleLines) => {
+            const candidates = [';', ','];
+            let bestSep = ',';
+            let maxConsistency = -1;
+
+            candidates.forEach(sep => {
+                // On compte les colonnes > 1 pour chaque ligne
+                const counts = sampleLines.map(l => l.split(sep).length).filter(c => c > 1);
+                // On cherche la fréquence max (le mode)
+                if (counts.length > maxConsistency) {
+                    maxConsistency = counts.length;
+                    bestSep = sep;
+                }
+            });
+            return bestSep;
+        };
+
+        const separator = detectSeparator(lines.slice(0, 10));
 
         return lines.slice(1).map((line, index) => {
             const matches = [];
@@ -945,6 +991,19 @@ const CoreApp = {
         if (aImgUrl) aHtml += `<img src="${aImgUrl}" class="max-w-full h-auto mt-4 rounded shadow-sm mx-auto max-h-60 object-contain" onerror="this.style.display='none'">`;
         document.getElementById('answer-content').innerHTML = aHtml;
         
+        // Ajout des écouteurs pour le zoom
+        ['question-content', 'answer-content'].forEach(id => {
+            const img = document.getElementById(id).querySelector('img');
+            if(img) {
+                img.classList.add('cursor-zoom-in', 'hover:opacity-90', 'transition-opacity');
+                img.title = "Cliquer pour agrandir";
+                img.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    UI.openZoom(img.src);
+                });
+            }
+        });
+
         setTimeout(() => document.getElementById('show-answer-btn').focus(), 50);
     },
 

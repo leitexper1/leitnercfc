@@ -102,9 +102,20 @@ function parseCsvRows(text) {
   let currentRow = [];
   let inQuotes = false;
 
-  // Détection simple du séparateur sur la première ligne
-  const firstLine = text.split('\n')[0] || '';
-  const separator = (firstLine.indexOf(';') > -1 && firstLine.split(';').length >= firstLine.split(',').length) ? ';' : ',';
+  // Détection statistique du séparateur sur les 10 premières lignes
+  const linesSample = text.split(/\r\n|\n|\r/).slice(0, 10);
+  let separator = ',';
+  let maxScore = -1;
+  
+  [';', ','].forEach(sep => {
+      // On compte combien de lignes ont une structure (plus d'une colonne) avec ce séparateur
+      const score = linesSample.filter(l => l.split(sep).length > 1).length;
+      // En cas d'égalité (ex: 0 vs 0 ou 10 vs 10), on privilégie le point-virgule pour le français
+      if (score > maxScore || (score === maxScore && sep === ';')) {
+          maxScore = score;
+          separator = sep;
+      }
+  });
 
   for (let i = 0; i < text.length; i++) {
     const char = text[i];

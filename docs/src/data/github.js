@@ -267,9 +267,22 @@ export class GitHubManager {
             throw new Error('Fichier CSV vide ou mal formaté');
         }
         
-        // Vérifier l'en-tête
-        const headerLine = lines[0];
-        const separator = (headerLine.indexOf(';') > -1 && headerLine.split(';').length >= headerLine.split(',').length) ? ';' : ',';
+        // Détection statistique du séparateur (Header vs Body)
+        const detectSeparator = (sampleLines) => {
+            const candidates = [';', ','];
+            let bestSep = ',';
+            let maxScore = -1;
+            candidates.forEach(sep => {
+                // Score = nombre de lignes ayant une structure de colonnes (>1)
+                const score = sampleLines.filter(l => l.split(sep).length > 1).length;
+                if (score > maxScore) {
+                    maxScore = score;
+                    bestSep = sep;
+                }
+            });
+            return bestSep;
+        };
+        const separator = detectSeparator(lines.slice(0, 10));
 
         const headers = headerLine.split(separator).map(h => h.trim());
         const expectedHeaders = [
