@@ -204,7 +204,10 @@ const UI = {
         if (!select) return;
         select.innerHTML = '<option value="">-- Choisir un paquet --</option>';
         
-        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+        const isLocal = window.location.hostname === 'localhost' || 
+                       window.location.hostname === '127.0.0.1' || 
+                       window.location.protocol === 'file:' ||
+                       window.location.hostname.endsWith('github.io');
 
         // Filtrer pour ne garder que les fichiers du dossier csv/
         const filteredFiles = files.filter(f => {
@@ -843,7 +846,10 @@ const CoreApp = {
         if (!filename) return null;
         if (filename.startsWith('http') || filename.startsWith('data:')) return filename;
         
-        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+        const isLocal = window.location.hostname === 'localhost' || 
+                       window.location.hostname === '127.0.0.1' || 
+                       window.location.protocol === 'file:' ||
+                       window.location.hostname.endsWith('github.io');
         
         const c = APP_STATE.config;
         const folder = type === 'q' ? 'images_questions' : 'images_reponses';
