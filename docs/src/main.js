@@ -864,17 +864,19 @@ const CoreApp = {
         // Encodage des segments pour l'URL (garde les slashes)
         const encodedPath = cleanPath.split('/').map(encodeURIComponent).join('/');
         
+        let finalUrl = '';
         if (isLocal) {
-            return encodedPath;
+            finalUrl = encodedPath;
+        } else {
+            let basePath = c.path.endsWith('/') ? c.path.slice(0, -1) : c.path;
+            if (basePath.endsWith('/csv')) basePath = basePath.slice(0, -4);
+            else if (basePath === 'csv') basePath = '';
+            const repoPath = basePath ? `${basePath}/` : '';
+            finalUrl = `https://raw.githubusercontent.com/${c.owner}/${c.repo}/${c.branch}/${repoPath}${encodedPath}`;
         }
-        
-        let basePath = c.path.endsWith('/') ? c.path.slice(0, -1) : c.path;
-        if (basePath.endsWith('/csv')) basePath = basePath.slice(0, -4);
-        else if (basePath === 'csv') basePath = '';
 
-        const repoPath = basePath ? `${basePath}/` : '';
-        
-        return `https://raw.githubusercontent.com/${c.owner}/${c.repo}/${c.branch}/${repoPath}${encodedPath}`;
+        // Ajout du cache buster pour forcer le navigateur à recharger l'image si elle a changé
+        return `${finalUrl}?v=${APP_STATE.cacheBuster}`;
     },
 
     validateImageStructure: (filename) => {
