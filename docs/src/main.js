@@ -372,7 +372,7 @@ const SessionManager = {
                 document.getElementById('tab-review-trigger').click();
                 CoreApp.startReview();
             } else {
-                if(confirm(`Fichier "${sessionToResume.deckName}" requis. Aller à l'onglet Révision ?`)) {
+                if(confirm(`Fichier "${sessionToResume.deckName}" requis. Aller à le bouton Révision ?`)) {
                     document.getElementById('tab-review-trigger').click();
                     const selector = document.getElementById('csv-selector');
                     if(selector) selector.focus();
@@ -944,7 +944,7 @@ const CoreApp = {
         
         // Fin de session
         SessionManager.updateCurrent(); 
-        alert(`Tour terminé !\nScore : ${s.stats.correct}/${s.totalCards}\n\nVoir l'onglet Statistiques pour les détails.`);
+        alert(`Tour terminé !\nScore : ${s.stats.correct}/${s.totalCards}\n\nVoir le bouton Statistiques pour les détails.`);
         CoreApp.closeFlashcard();
     },
 
@@ -971,7 +971,7 @@ const CoreApp = {
             CoreApp.closeFlashcard();
             const toast = document.createElement('div');
             toast.className = 'fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded shadow-lg z-50';
-            toast.textContent = "Session sauvegardée dans l'onglet Statistiques";
+            toast.textContent = "Session sauvegardée dans le bouton Statistiques";
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         };

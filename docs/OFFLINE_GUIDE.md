@@ -17,7 +17,7 @@ Ce guide explique comment préparer l'application pour un usage hors-ligne, comm
 2. **Mettre à jour le manifeste des CSV locaux.** Après avoir ajouté ou retiré un fichier `*.csv`, exécutez `python3 scripts/update_csv_manifest.py` depuis la racine du dépôt pour régénérer `docs/csv-files.json`.
 3. **Visiter l'application au moins une fois en ligne.** Lors de la première visite, le service worker est enregistré et pré-télécharge les fichiers HTML, CSS, JavaScript et images clés.
 4. **Vérifier l'installation du service worker.** Dans votre navigateur :
-   - Ouvrez les outils de développement → onglet *Application* → section *Service Workers*.
+   - Ouvrez les outils de développement → bouton *Application* → section *Service Workers*.
    - Confirmez que `offlineWorker.js` est « Activated and running ».
 5. **Ajouter l'application à l'écran d'accueil (optionnel).** Les navigateurs mobiles proposeront l'installation en PWA dès que le service worker est actif, ce qui permet une utilisation hors-ligne complète.
 

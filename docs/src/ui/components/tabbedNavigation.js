@@ -81,7 +81,7 @@ export class TabbedNavigation {
                 this.router.activateTab(button.dataset.tabTarget);
                 button.focus();
             }, {
-                description: `Ouvrir l'onglet « ${button.textContent.trim()} »`,
+                description: `Ouvrir le bouton « ${button.textContent.trim()} »`,
                 element: button
             });
         });

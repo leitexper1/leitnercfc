@@ -237,10 +237,10 @@ function renderCard(card, index) {
   questionImageField.appendChild(questionImageInput);
   const questionThumbnail = document.createElement('div');
   questionThumbnail.className = 'image-thumbnail';
-  questionThumbnail.title = 'Ouvrir l’image de la question dans un nouvel onglet';
+  questionThumbnail.title = 'Ouvrir l’image de la question dans un nouveau bouton';
   questionThumbnail.tabIndex = 0;
   questionThumbnail.setAttribute('role', 'button');
-  questionThumbnail.setAttribute('aria-label', 'Afficher l’image de la question dans un nouvel onglet');
+  questionThumbnail.setAttribute('aria-label', 'Afficher l’image de la question dans un nouveau bouton');
   const questionImg = document.createElement('img');
   questionImg.alt = 'Miniature question';
   questionImg.loading = 'lazy';
@@ -270,10 +270,10 @@ function renderCard(card, index) {
   answerImageField.appendChild(answerImageInput);
   const answerThumbnail = document.createElement('div');
   answerThumbnail.className = 'image-thumbnail';
-  answerThumbnail.title = 'Ouvrir l’image de la réponse dans un nouvel onglet';
+  answerThumbnail.title = 'Ouvrir l’image de la réponse dans un nouveau bouton';
   answerThumbnail.tabIndex = 0;
   answerThumbnail.setAttribute('role', 'button');
-  answerThumbnail.setAttribute('aria-label', 'Afficher l’image de la réponse dans un nouvel onglet');
+  answerThumbnail.setAttribute('aria-label', 'Afficher l’image de la réponse dans un nouveau bouton');
   const answerImg = document.createElement('img');
   answerImg.alt = 'Miniature réponse';
   answerImg.loading = 'lazy';

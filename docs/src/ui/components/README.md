@@ -4,7 +4,7 @@ Ce dossier regroupe les widgets utilisés par l'interface de l'application Leitn
 
 ## `TabbedNavigation`
 - **Rôle :** améliore le `TabRouter` natif avec navigation clavier, intégration des raccourcis et attributs ARIA.
-- **Accessibilité :** attribue `role="tab"` aux déclencheurs, gère l'orientation du tablist et lie chaque onglet à son panneau via `aria-controls`/`aria-labelledby`.
+- **Accessibilité :** attribue `role="tab"` aux déclencheurs, gère l'orientation du tablist et lie chaque bo à son panneau via `aria-controls`/`aria-labelledby`.
 - **Utilisation rapide :**
   ```js
   const navigation = new TabbedNavigation({ tablist, router, keyboardManager });
