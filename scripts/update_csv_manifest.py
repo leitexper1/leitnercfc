@@ -16,9 +16,12 @@ from typing import Iterable
 
 def discover_csv_files(base_dir: Path) -> list[str]:
     csv_files: list[str] = []
-    for path in sorted(base_dir.glob('*.csv')):
+    csv_dir = base_dir / 'csv'
+    if not csv_dir.exists():
+        return []
+    for path in sorted(csv_dir.glob('*.csv')):
         if path.is_file():
-            csv_files.append(path.name)
+            csv_files.append(f'csv/{path.name}')
     return csv_files
 
 

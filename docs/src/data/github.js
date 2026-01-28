@@ -174,7 +174,9 @@ export class GitHubManager {
         for (const manifestName of manifestCandidates) {
             try {
                 const manifestUrl = new URL(manifestName, baseUrl);
-                const response = await fetch(manifestUrl, { cache: 'no-store' });
+                // Ajout d'un timestamp pour éviter le cache sur le fichier manifest
+                manifestUrl.searchParams.set('_t', Date.now());
+                const response = await fetch(manifestUrl.toString(), { cache: 'no-store' });
                 if (!response.ok) {
                     continue;
                 }
@@ -208,7 +210,10 @@ export class GitHubManager {
 
         for (const targetUrl of scanTargets) {
             try {
-                const response = await fetch(targetUrl, { cache: 'no-store' });
+                // Ajout d'un timestamp pour contourner le cache navigateur tenace sur les listings de répertoires locaux
+                const urlObj = new URL(targetUrl);
+                urlObj.searchParams.set('_t', Date.now());
+                const response = await fetch(urlObj.toString(), { cache: 'no-store' });
                 if (!response.ok) continue;
 
                 const contentType = response.headers.get('content-type') || '';

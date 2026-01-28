@@ -144,7 +144,7 @@ const UI = {
         document.getElementById('beginner-guide-btn')?.addEventListener('click', openGuide);
         document.getElementById('open-github-guide')?.addEventListener('click', openGuide);
         document.getElementById('close-github-guide')?.addEventListener('click', closeGuide);
-        
+
         document.getElementById('open-import-export')?.addEventListener('click', () => {
             if (window.openImportExport) window.openImportExport();
         });
@@ -202,8 +202,22 @@ const UI = {
     populateCSVSelector: function(files, options = {}) {
         const select = document.getElementById('csv-selector');
         if (!select) return;
+        
+        // --- STRATÉGIE ANALYSTE : Remplacement du Select par un Data Explorer ---
+        // 1. On cache le selecteur natif mais on le garde pour la compatibilité avec CoreApp
+        select.style.display = 'none';
         select.innerHTML = '<option value="">-- Choisir un paquet --</option>';
         
+        // 2. Conteneur du nouvel explorateur
+        let explorerContainer = document.getElementById('csv-explorer-container');
+        if (!explorerContainer) {
+            explorerContainer = document.createElement('div');
+            explorerContainer.id = 'csv-explorer-container';
+            explorerContainer.className = 'mt-2';
+            select.parentNode.insertBefore(explorerContainer, select.nextSibling);
+        }
+        explorerContainer.innerHTML = '';
+
         const isLocal = window.location.hostname === 'localhost' || 
                        window.location.hostname === '127.0.0.1' || 
                        window.location.protocol === 'file:' ||
@@ -221,7 +235,7 @@ const UI = {
             return /(?:^|\/)csv\/[^/]+\.csv$/i.test(normalizedPath);
         });
 
-        // Déduplication stricte pour éviter les doublons
+        // Déduplication stricte
         const uniqueFiles = [];
         const seen = new Set();
         filteredFiles.forEach(f => {
@@ -234,45 +248,122 @@ const UI = {
 
         uniqueFiles.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
 
-        const groups = {};
-        const orphans = [];
+        // 3. Peupler le select caché (pour la logique interne) et préparer les données du tableau
+        const tableData = uniqueFiles.map(f => {
+            // Ajout au select caché
+            const option = document.createElement('option');
+            option.value = f.download_url || f.publicPath;
+            option.textContent = f.name;
+            option.dataset.name = f.name;
+            if(options.selectedName === f.name) option.selected = true;
+            select.appendChild(option);
 
-        uniqueFiles.forEach(file => {
-            let cleanName = file.name.replace('.csv', '');
+            // Préparation métadonnées pour le tableau
+            let cleanName = f.name.replace('.csv', '');
             if (cleanName.startsWith('csv/')) cleanName = cleanName.substring(4);
             
+            let domain = 'Divers';
+            // Heuristique : Si le nom contient un underscore, la première partie est le domaine
             if (cleanName.includes('_')) {
                 const parts = cleanName.split('_');
-                const category = parts[0];
-                const label = cleanName;
-                if (!groups[category]) groups[category] = [];
-                groups[category].push({ file, label });
-            } else {
-                orphans.push({ file, label: cleanName });
+                domain = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
             }
+
+            return {
+                raw: f,
+                name: cleanName,
+                domain: domain,
+                value: f.download_url || f.publicPath
+            };
         });
 
-        const addOption = (parent, item) => {
-            const option = document.createElement('option');
-            option.value = item.file.download_url || item.file.publicPath;
-            option.textContent = item.label;
-            option.dataset.name = item.file.name;
-            if(options.selectedName === item.file.name) option.selected = true;
-            parent.appendChild(option);
+        // 4. Construction de l'interface Data Explorer
+        const domains = [...new Set(tableData.map(i => i.domain))].sort();
+
+        // Zone de contrôles (Recherche + Filtre)
+        const controlsDiv = document.createElement('div');
+        controlsDiv.className = 'flex flex-col md:flex-row gap-3 mb-4';
+        
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.placeholder = '🔍 Rechercher un sujet...';
+        searchInput.className = 'flex-1 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none';
+        
+        const domainFilter = document.createElement('select');
+        domainFilter.className = 'p-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none';
+        domainFilter.innerHTML = '<option value="">Tous les domaines</option>';
+        domains.forEach(d => {
+            domainFilter.innerHTML += `<option value="${d}">${d}</option>`;
+        });
+
+        controlsDiv.appendChild(searchInput);
+        controlsDiv.appendChild(domainFilter);
+        explorerContainer.appendChild(controlsDiv);
+
+        // Grille compacte (remplace le tableau)
+        const gridWrapper = document.createElement('div');
+        gridWrapper.className = 'max-h-[400px] overflow-y-auto border rounded p-2 bg-gray-50';
+        
+        const grid = document.createElement('div');
+        grid.className = 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2';
+        gridWrapper.appendChild(grid);
+        explorerContainer.appendChild(gridWrapper);
+
+        // Fonction de rendu dynamique
+        const renderRows = () => {
+            const term = searchInput.value.toLowerCase();
+            const domain = domainFilter.value;
+
+            const filtered = tableData.filter(item => {
+                const matchText = item.name.toLowerCase().includes(term) || item.domain.toLowerCase().includes(term);
+                const matchDomain = domain === '' || item.domain === domain;
+                return matchText && matchDomain;
+            });
+
+            grid.innerHTML = '';
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center text-gray-500 italic py-8">Aucun paquet trouvé</div>';
+                return;
+            }
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'bg-white border border-gray-200 rounded p-2 cursor-pointer hover:bg-blue-50 hover:border-blue-400 transition-all shadow-sm flex flex-col justify-between group relative';
+                
+                if(select.value === item.value) {
+                    card.classList.add('ring-2', 'ring-blue-500', 'bg-blue-50');
+                }
+
+                card.innerHTML = `
+                    <div class="font-medium text-gray-800 text-xs leading-tight group-hover:text-blue-700 break-words mb-1" title="${item.name}">
+                        ${item.name}
+                    </div>
+                    <div class="flex justify-end">
+                        <span class="inline-block bg-gray-100 text-gray-500 text-[9px] px-1.5 rounded border border-gray-200">${item.domain}</span>
+                    </div>
+                `;
+                
+                const loadPackage = (e) => {
+                    e.stopPropagation();
+                    select.value = item.value;
+                    // Déclenche l'événement change pour que CoreApp réagisse
+                    select.dispatchEvent(new Event('change'));
+                    
+                    // Feedback visuel
+                    Array.from(grid.children).forEach(c => c.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-50'));
+                    card.classList.add('ring-2', 'ring-blue-500', 'bg-blue-50');
+                };
+
+                card.addEventListener('click', loadPackage);
+                grid.appendChild(card);
+            });
         };
 
-        for (const [category, items] of Object.entries(groups)) {
-            const optgroup = document.createElement('optgroup');
-            optgroup.label = category.charAt(0).toUpperCase() + category.slice(1);
-            items.forEach(item => addOption(optgroup, item));
-            select.appendChild(optgroup);
-        }
-        if (orphans.length > 0) {
-            const optgroup = document.createElement('optgroup');
-            optgroup.label = "Autres";
-            orphans.forEach(item => addOption(optgroup, item));
-            select.appendChild(optgroup);
-        }
+        searchInput.addEventListener('input', renderRows);
+        domainFilter.addEventListener('change', renderRows);
+        
+        // Rendu initial
+        renderRows();
     }
 };
 
@@ -550,7 +641,10 @@ const CoreApp = {
                 status.textContent = "Chargement...";
                 status.className = "mt-2 w-full text-sm text-blue-600";
                 
-                const response = await fetch(url);
+                // Ajout d'un cache buster pour être sûr de ne pas taper dans un cache 404 ou périmé
+                const fetchUrl = new URL(url, window.location.href);
+                fetchUrl.searchParams.set('_t', Date.now());
+                const response = await fetch(fetchUrl.toString());
                 if(!response.ok) throw new Error("Fichier introuvable");
                 
                 const text = await response.text();
@@ -593,6 +687,14 @@ const CoreApp = {
                 const status = document.getElementById('csv-load-status');
                 status.textContent = "Erreur de chargement.";
                 status.className = "mt-2 w-full text-sm text-red-600";
+
+                // Si le fichier est introuvable (ex: renommé), on force le rafraîchissement de la liste
+                const app = window.leitnerAppInstance || (window.leitnerApp && window.leitnerApp.instance);
+                if (app && typeof app.loadCSVFromGitHub === 'function') {
+                    console.log("Fichier introuvable, tentative d'actualisation de la liste CSV...");
+                    await app.loadCSVFromGitHub();
+                    status.textContent = "Erreur de chargement. La liste a été actualisée, veuillez réessayer.";
+                }
             }
         });
 

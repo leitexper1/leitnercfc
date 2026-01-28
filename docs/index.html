@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Système Leitner - Gestion de Flashcards</title>
+    <title>Leitner Codex - Apprendre durablement - Flashcards</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="mordor-2340048_1280.png">
     
@@ -190,8 +190,8 @@
 <body class="site-background text-gray-800">
     <div class="container mx-auto max-w-6xl p-5">
         <header class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">Démonstration du système de Leitner</h1>
-            <p class="text-gray-600">Apprentissage par répétition espacée</p>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Leitner Codex : Mémorisation efficace</h1>
+            <p class="text-gray-600">Apprenez durablement grâce à la répétition espacée</p>
             <p class="text-gray-600">Par OM en 2026.01.19</p>            
         </header>
 
@@ -217,20 +217,21 @@
             
             <section id="tab-review" class="tab-panel space-y-6" role="tabpanel" aria-labelledby="tab-review-trigger" data-tab-panel="review">
                 <div class="bg-white rounded-lg shadow-md p-5">
-                    <div class="flex flex-wrap justify-between items-center mb-4">
-                        <h2 class="text-xl font-bold mb-4 md:mb-0 w-full">Choisir un sujet  à mémoriser.</h2>
-                        <p id="csv-load-status" class="mt-2 w-full text-sm text-green-600 hidden" role="status" aria-live="polite"></p>
-                    </div>
-
-                    <div class="mb-4 flex flex-col md:flex-row md:items-center gap-2">
-                        <div class="flex-grow flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-                            <select id="csv-selector" class="p-2 border rounded w-full sm:flex-1 md:min-w-[300px]">
-                                <option value="">Initialisation...</option>
-                            </select>
-                            <button id="reset-deck-btn" class="bg-red-100 text-red-600 px-4 py-2 rounded hover:bg-red-200 border border-red-200 whitespace-nowrap hidden w-full sm:w-auto flex items-center justify-center gap-2 shadow-sm transition-colors" title="Tout remettre en Boîte 1">
-                                <span class="text-lg font-bold">↺</span> <span>Reset</span>
+                    <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
+                        <div class="flex items-center gap-3">
+                            <h2 class="text-xl font-bold text-gray-800">Choisir un sujet à mémoriser</h2>
+                            <button id="reset-deck-btn" class="hidden group flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-gray-500 bg-white border border-gray-200 rounded-full hover:border-red-300 hover:text-red-600 hover:bg-red-50 transition-all shadow-sm" title="Réinitialiser la progression de ce paquet (Boîte 1)">
+                                <span class="group-hover:-rotate-180 transition-transform duration-500">↺</span>
+                                <span>Réinitialiser</span>
                             </button>
                         </div>
+                        <p id="csv-load-status" class="text-sm text-green-600 hidden" role="status" aria-live="polite"></p>
+                    </div>
+
+                    <div class="mb-4">
+                        <select id="csv-selector" class="p-2 border rounded w-full">
+                            <option value="">Initialisation...</option>
+                        </select>
                     </div>
                 </div>
 

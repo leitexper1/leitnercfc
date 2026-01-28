@@ -1,8 +1,8 @@
 [
   "csv/ART_test_definitions.csv",
   "csv/ELECTRO_formules_1.csv",
-  "csv/MATERIEL_essai_flashcards_leitner.csv",
-  "csv/NIBT_nibt_definitions.csv",
+  "csv/MATERIEL_installation.csv",
+  "csv/NIBT_definitions.csv",
   "csv/NIBT_oibt_question_1.csv",
   "csv/NIBT_questions_generales.csv",
   "csv/NIBT_tableaux_figures.csv",

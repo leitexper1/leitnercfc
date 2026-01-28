@@ -23,6 +23,13 @@ const DEFAULT_USER_CONFIG = {
 
 export class LeitnerApp {
     constructor(options = {}) {
+        // Expose l'instance pour permettre le rechargement depuis main.js en cas d'erreur
+        if (typeof window !== 'undefined') {
+            window.leitnerAppInstance = this;
+            window.leitnerApp = window.leitnerApp || {};
+            window.leitnerApp.instance = this;
+        }
+
         this.github = new GitHubManager();
         this.ui = new UIManager();
         this.crud = new CRUDManager();
