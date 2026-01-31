@@ -228,13 +228,32 @@ function renderCard(card, index) {
 
   const questionImageField = document.createElement('div');
   questionImageField.className = 'image-field';
+
+  const qInputGroup = document.createElement('div');
+  qInputGroup.style.display = 'flex';
+  qInputGroup.style.gap = '5px';
+
   const questionImageInput = document.createElement('input');
   questionImageInput.type = 'text';
   questionImageInput.dataset.field = 'question_content_image';
   questionImageInput.dataset.imageType = 'question';
   questionImageInput.placeholder = 'images_questions/mon-image.jpg';
   questionImageInput.value = card.question_content_image;
-  questionImageField.appendChild(questionImageInput);
+
+  const qBrowseBtn = document.createElement('button');
+  qBrowseBtn.type = 'button';
+  qBrowseBtn.className = 'browse-btn';
+  qBrowseBtn.textContent = '📁';
+  qBrowseBtn.title = 'Parcourir les fichiers...';
+
+  const qFileHidden = document.createElement('input');
+  qFileHidden.type = 'file';
+  qFileHidden.accept = 'image/*';
+  qFileHidden.className = 'hidden';
+
+  qInputGroup.append(questionImageInput, qBrowseBtn, qFileHidden);
+  questionImageField.appendChild(qInputGroup);
+
   const questionThumbnail = document.createElement('div');
   questionThumbnail.className = 'image-thumbnail';
   questionThumbnail.title = 'Ouvrir l’image de la question dans un nouveau bouton';
@@ -261,13 +280,32 @@ function renderCard(card, index) {
 
   const answerImageField = document.createElement('div');
   answerImageField.className = 'image-field';
+
+  const aInputGroup = document.createElement('div');
+  aInputGroup.style.display = 'flex';
+  aInputGroup.style.gap = '5px';
+
   const answerImageInput = document.createElement('input');
   answerImageInput.type = 'text';
   answerImageInput.dataset.field = 'answer_content_image';
   answerImageInput.dataset.imageType = 'answer';
   answerImageInput.placeholder = 'images_reponses/mon-image.jpg';
   answerImageInput.value = card.answer_content_image;
-  answerImageField.appendChild(answerImageInput);
+
+  const aBrowseBtn = document.createElement('button');
+  aBrowseBtn.type = 'button';
+  aBrowseBtn.className = 'browse-btn';
+  aBrowseBtn.textContent = '📁';
+  aBrowseBtn.title = 'Parcourir les fichiers...';
+
+  const aFileHidden = document.createElement('input');
+  aFileHidden.type = 'file';
+  aFileHidden.accept = 'image/*';
+  aFileHidden.className = 'hidden';
+
+  aInputGroup.append(answerImageInput, aBrowseBtn, aFileHidden);
+  answerImageField.appendChild(aInputGroup);
+
   const answerThumbnail = document.createElement('div');
   answerThumbnail.className = 'image-thumbnail';
   answerThumbnail.title = 'Ouvrir l’image de la réponse dans un nouveau bouton';
@@ -304,12 +342,31 @@ function renderCard(card, index) {
     localStorage.setItem('leitnerCards', JSON.stringify(cards));
   };
 
+  // Gestionnaires pour les sélecteurs de fichiers
+  qBrowseBtn.onclick = () => qFileHidden.click();
+  qFileHidden.onchange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      questionImageInput.value = `images_questions/${file.name}`;
+      questionImageInput.dispatchEvent(new Event('input'));
+    }
+  };
+
+  aBrowseBtn.onclick = () => aFileHidden.click();
+  aFileHidden.onchange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      answerImageInput.value = `images_reponses/${file.name}`;
+      answerImageInput.dispatchEvent(new Event('input'));
+    }
+  };
+
   section.querySelectorAll('[data-field]').forEach(el => {
     const field = el.dataset.field;
     el.addEventListener('input', () => {
       cards[index][field] = el.value;
       if (el.dataset.imageType) {
-        const preview = el.parentElement?.querySelector('.image-thumbnail');
+        const preview = el.closest('.image-field')?.querySelector('.image-thumbnail');
         updateThumbnail(preview, el.value, el.dataset.imageType);
       }
       persistCards();
