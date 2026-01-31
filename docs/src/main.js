@@ -341,7 +341,7 @@ const UI = {
         gridWrapper.className = 'max-h-[400px] overflow-y-auto border rounded p-2 bg-gray-50';
         
         const grid = document.createElement('div');
-        grid.className = 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2';
+        grid.className = 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2';
         gridWrapper.appendChild(grid);
         explorerContainer.appendChild(gridWrapper);
 
@@ -936,7 +936,7 @@ const CoreApp = {
                 section.appendChild(title);
                 
                 const grid = document.createElement('div');
-                grid.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3';
+                grid.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3';
                 
                 cards.forEach(card => {
                     const cardEl = document.createElement('div');
