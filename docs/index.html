@@ -199,6 +199,12 @@
             <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
                 <div class="flex items-center gap-3">
                     <h2 class="text-xl font-bold text-gray-800">Choisir un sujet à mémoriser</h2>
+                    <div class="relative group">
+                        <span class="cursor-help text-gray-400 hover:text-blue-600 text-xl">ⓘ</span>
+                        <div class="absolute left-0 top-full mt-2 w-80 p-3 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 pointer-events-none group-hover:pointer-events-auto leading-relaxed">
+                            Pour utiliser ce site, choisissez un thème, cliquez sur la première boîte, réfléchissez à la réponse, regardez la solution, puis appuyez sur VRAI si vous aviez juste (la carte avance) ou sur FAUX sinon (elle revient dans la boîte 1) ; la date et l’heure de votre prochaine révision apparaissent sous les boîtes.
+                        </div>
+                    </div>
                     <button id="reset-deck-btn" class="hidden group flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-gray-500 bg-white border border-gray-200 rounded-full hover:border-red-300 hover:text-red-600 hover:bg-red-50 transition-all shadow-sm" title="Réinitialiser la progression de ce paquet (Boîte 1)">
                         <span class="group-hover:-rotate-180 transition-transform duration-500">↺</span>
                         <span>Réinitialiser</span>
