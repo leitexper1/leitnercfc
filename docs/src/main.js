@@ -235,6 +235,33 @@ const UI = {
         }
     },
 
+    getDomainFromFilename: (filename) => {
+        if (!filename) return 'Divers';
+        let cleanName = filename.replace('.csv', '');
+        if (cleanName.startsWith('csv/')) cleanName = cleanName.substring(4);
+        
+        if (cleanName.includes('_')) {
+            const parts = cleanName.split('_');
+            return parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+        }
+        return 'Divers';
+    },
+
+    getDomainColor: (str) => {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        // Utilisation de l'angle d'or (~137.5°) pour disperser les teintes de manière optimale
+        // Cela assure que deux domaines, même proches alphabétiquement, auront des couleurs très distinctes
+        const h = Math.abs((hash * 137.5) % 360);
+        return {
+            bg: `hsl(${h}, 85%, 94%)`,
+            text: `hsl(${h}, 80%, 30%)`,
+            border: `hsl(${h}, 60%, 80%)`
+        };
+    },
+
     populateCSVSelector: function(files, options = {}) {
         const select = document.getElementById('csv-selector');
         if (!select) return;
@@ -370,12 +397,14 @@ const UI = {
                     card.classList.add('ring-2', 'ring-blue-500', 'bg-blue-50');
                 }
 
+                const colors = UI.getDomainColor(item.domain);
+
                 card.innerHTML = `
                     <div class="font-medium text-gray-800 text-xs leading-tight group-hover:text-blue-700 break-words mb-1" title="${item.name}">
                         ${item.name}
                     </div>
                     <div class="flex justify-end">
-                        <span class="inline-block bg-gray-100 text-gray-500 text-[9px] px-1.5 rounded border border-gray-200">${item.domain}</span>
+                        <span class="inline-block text-[9px] px-1.5 rounded border" style="background-color: ${colors.bg}; color: ${colors.text}; border-color: ${colors.border}">${item.domain}</span>
                     </div>
                 `;
                 
@@ -923,6 +952,9 @@ const CoreApp = {
         
         container.innerHTML = ''; 
         
+        const domain = UI.getDomainFromFilename(CoreApp.csvData.filename);
+        const colors = UI.getDomainColor(domain);
+        
         [1, 2, 3, 4, 5].forEach(boxNum => {
             const cards = CoreApp.csvData.filter(c => c.box === boxNum);
             
@@ -941,6 +973,9 @@ const CoreApp = {
                 cards.forEach(card => {
                     const cardEl = document.createElement('div');
                     cardEl.className = 'border rounded p-3 hover:bg-blue-50 text-sm flex gap-3 cursor-pointer transition transform hover:-translate-y-1 hover:shadow-md';
+                    cardEl.className = 'border rounded p-3 text-sm flex gap-3 cursor-pointer transition transform hover:-translate-y-1 hover:shadow-md';
+                    cardEl.style.backgroundColor = colors.bg;
+                    cardEl.style.borderColor = colors.border;
                     
                     cardEl.onclick = () => {
                         const boxCards = CoreApp.csvData.filter(c => c.box === boxNum);
@@ -1092,6 +1127,13 @@ const CoreApp = {
         container.classList.remove('hidden');
         container.setAttribute('aria-hidden', 'false'); 
         
+        const domain = UI.getDomainFromFilename(CoreApp.csvData.filename);
+        const colors = UI.getDomainColor(domain);
+        const flashcardEl = container.querySelector('.flashcard');
+        if (flashcardEl) {
+            flashcardEl.style.backgroundColor = colors.bg;
+        }
+
         document.getElementById('answer-section').classList.add('hidden');
         document.getElementById('show-answer-btn').classList.remove('hidden');
 
