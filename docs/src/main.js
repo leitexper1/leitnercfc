@@ -248,17 +248,32 @@ const UI = {
     },
 
     getDomainColor: (str) => {
-        let hash = 0;
+        // 1. Hash initial (DJB2) pour transformer la chaîne en entier
+        let hash = 5381;
         for (let i = 0; i < str.length; i++) {
-            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            hash = ((hash << 5) + hash) + str.charCodeAt(i);
         }
-        // Utilisation de l'angle d'or (~137.5°) pour disperser les teintes de manière optimale
-        // Cela assure que deux domaines, même proches alphabétiquement, auront des couleurs très distinctes
-        const h = Math.abs((hash * 137.5) % 360);
+
+        // 2. Mélangeur de bits (Bit-Mixer) pour garantir l'effet d'avalanche
+        // Cela assure que des noms proches (ex: "Math" et "Maths") produisent des teintes opposées.
+        let hMix = hash ^ (hash >>> 16);
+        hMix = Math.imul(hMix, 0x85ebca6b);
+        hMix ^= hMix >>> 13;
+        hMix = Math.imul(hMix, 0xc2b2ae35);
+        hMix ^= hMix >>> 16;
+
+        // 3. Projection via l'Angle d'Or (~137.508°)
+        // Cette constante irrationnelle permet une distribution optimale sur le cercle chromatique.
+        const h = Math.abs((hMix * 137.508) % 360);
+        
+        // 4. Variation dynamique de saturation et luminosité pour une distinction accrue
+        const s = 75 + (Math.abs(hash % 15)); // Saturation entre 75% et 90%
+        const l = 93 + (Math.abs((hash >> 4) % 4)); // Luminosité entre 93% et 97%
+
         return {
-            bg: `hsl(${h}, 85%, 94%)`,
-            text: `hsl(${h}, 80%, 30%)`,
-            border: `hsl(${h}, 60%, 80%)`
+            bg: `hsl(${h}, ${s}%, ${l}%)`,
+            text: `hsl(${h}, ${s + 5}%, 25%)`, // Texte plus sombre pour un contraste parfait
+            border: `hsl(${h}, ${s - 10}%, ${l - 10}%)`
         };
     },
 
