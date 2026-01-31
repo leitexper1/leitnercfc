@@ -195,46 +195,27 @@
             <p class="text-gray-600">Par OM en 2026.01.19</p>            
         </header>
 
-        <div class="beginner-guide-banner" role="region" aria-label="Guide pour débutant">
-            <p class="beginner-guide-text">Besoin d'aide pour configurer votre GitHub&nbsp;? Suivez notre guide pas à pas.</p>
-            <button id="beginner-guide-btn" class="beginner-guide-button" type="button">
-                Guide pour débutant
-            </button>
+        <div class="bg-white rounded-lg shadow-md p-5 mb-6">
+            <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
+                <div class="flex items-center gap-3">
+                    <h2 class="text-xl font-bold text-gray-800">Choisir un sujet à mémoriser</h2>
+                    <button id="reset-deck-btn" class="hidden group flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-gray-500 bg-white border border-gray-200 rounded-full hover:border-red-300 hover:text-red-600 hover:bg-red-50 transition-all shadow-sm" title="Réinitialiser la progression de ce paquet (Boîte 1)">
+                        <span class="group-hover:-rotate-180 transition-transform duration-500">↺</span>
+                        <span>Réinitialiser</span>
+                    </button>
+                </div>
+                <p id="csv-load-status" class="text-sm text-green-600 hidden" role="status" aria-live="polite"></p>
+            </div>
+
+            <div class="mb-4">
+                <select id="csv-selector" class="p-2 border rounded w-full">
+                    <option value="">Initialisation...</option>
+                </select>
+            </div>
         </div>
 
         <div class="tab-container">
-            <nav class="tab-nav" role="tablist" aria-label="Navigation principale">
-                <button id="tab-review-trigger" class="tab-button" role="tab" aria-selected="false" aria-controls="tab-review" data-tab-target="review">
-                    Révision
-                </button>
-                <button id="tab-stats-trigger" class="tab-button" role="tab" aria-selected="false" aria-controls="tab-stats" data-tab-target="stats">
-                    Statistiques
-                </button>
-                <button id="open-import-export" class="tab-button" type="button" data-action="open-import-export" aria-haspopup="dialog">
-                    Import / Export avancé
-                </button>
-            </nav>
-            
             <section id="tab-review" class="tab-panel space-y-6" role="tabpanel" aria-labelledby="tab-review-trigger" data-tab-panel="review">
-                <div class="bg-white rounded-lg shadow-md p-5">
-                    <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
-                        <div class="flex items-center gap-3">
-                            <h2 class="text-xl font-bold text-gray-800">Choisir un sujet à mémoriser</h2>
-                            <button id="reset-deck-btn" class="hidden group flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-gray-500 bg-white border border-gray-200 rounded-full hover:border-red-300 hover:text-red-600 hover:bg-red-50 transition-all shadow-sm" title="Réinitialiser la progression de ce paquet (Boîte 1)">
-                                <span class="group-hover:-rotate-180 transition-transform duration-500">↺</span>
-                                <span>Réinitialiser</span>
-                            </button>
-                        </div>
-                        <p id="csv-load-status" class="text-sm text-green-600 hidden" role="status" aria-live="polite"></p>
-                    </div>
-
-                    <div class="mb-4">
-                        <select id="csv-selector" class="p-2 border rounded w-full">
-                            <option value="">Initialisation...</option>
-                        </select>
-                    </div>
-                </div>
-
                 <div id="leitner-boxes" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     </div>
 
@@ -590,6 +571,34 @@
                 <h2 id="stats-modal-title" class="text-2xl font-bold mb-4">📊 Statistiques</h2>
             </div>
         </div>
+
+    <div id="menu-container" class="fixed bottom-6 left-6 z-50 flex flex-col items-start gap-4">
+        <div id="main-menu-content" class="hidden flex-col bg-white rounded-2xl shadow-2xl p-2 mb-2 min-w-[220px] origin-bottom-left transition-all duration-200 border border-gray-100">
+            <nav class="flex flex-col space-y-1" role="tablist">
+                <button id="tab-review-trigger" class="tab-button flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors bg-blue-600 text-white shadow-sm" role="tab" aria-selected="true" aria-controls="tab-review" data-tab-target="review">
+                    <span class="text-lg">📝</span>
+                    <span class="font-bold text-sm">Révision</span>
+                </button>
+                <button id="tab-stats-trigger" class="tab-button flex items-center gap-3 px-4 py-3 rounded-xl text-left text-gray-600 hover:bg-gray-100 transition-colors" role="tab" aria-selected="false" aria-controls="tab-stats" data-tab-target="stats">
+                    <span class="text-lg">📊</span>
+                    <span class="font-bold text-sm">Statistiques</span>
+                </button>
+                <button id="open-import-export" class="tab-button flex items-center gap-3 px-4 py-3 rounded-xl text-left text-gray-600 hover:bg-gray-100 transition-colors" type="button" data-action="open-import-export">
+                    <span class="text-lg">⇄</span>
+                    <span class="font-bold text-sm">Import / Export</span>
+                </button>
+                <div class="h-px bg-gray-200 my-1"></div>
+                <button id="beginner-guide-btn" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left text-purple-700 hover:bg-purple-50 transition-colors" type="button">
+                    <span class="text-lg">🎓</span>
+                    <span class="font-bold text-sm">Guide débutant</span>
+                </button>
+            </nav>
+        </div>
+
+        <button id="main-menu-trigger" class="bg-gray-900 text-white w-14 h-14 rounded-full shadow-xl flex items-center justify-center hover:bg-gray-800 hover:scale-105 transition-all focus:outline-none focus:ring-4 focus:ring-gray-300" aria-label="Menu principal" aria-expanded="false">
+            <span class="text-2xl leading-none">☰</span>
+        </button>
+    </div>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module" src="src/main.js"></script>

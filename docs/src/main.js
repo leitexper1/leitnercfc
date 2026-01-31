@@ -95,6 +95,7 @@ const UI = {
         UI.setupAdminListeners();
         UI.setupTabListeners();
         UI.setupImageZoom();
+        UI.setupMenu();
     },
 
     loadConfig: () => {
@@ -156,19 +157,54 @@ const UI = {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
                 document.querySelectorAll('.tab-button').forEach(b => {
-                    b.classList.remove('tab-button-active', 'bg-blue-600', 'text-white');
-                    b.classList.add('bg-gray-200', 'text-gray-700');
+                    b.classList.remove('tab-button-active', 'bg-blue-600', 'text-white', 'shadow-sm');
+                    b.classList.add('text-gray-600', 'hover:bg-gray-100');
                 });
                 const targetId = btn.dataset.tabTarget;
                 const panel = document.querySelector(`[data-tab-panel="${targetId}"]`);
                 if(panel) panel.classList.remove('hidden');
-                btn.classList.add('tab-button-active', 'bg-blue-600', 'text-white');
-                btn.classList.remove('bg-gray-200', 'text-gray-700');
+                btn.classList.add('tab-button-active', 'bg-blue-600', 'text-white', 'shadow-sm');
+                btn.classList.remove('text-gray-600', 'hover:bg-gray-100');
                 if (targetId === 'stats') StatsUI.init();
             });
         });
         const defaultTab = document.getElementById('tab-review-trigger');
         if(defaultTab) defaultTab.click();
+    },
+
+    setupMenu: () => {
+        const trigger = document.getElementById('main-menu-trigger');
+        const content = document.getElementById('main-menu-content');
+        
+        if (!trigger || !content) return;
+
+        const toggleMenu = (forceClose = false) => {
+            const isHidden = content.classList.contains('hidden');
+            if (forceClose || !isHidden) {
+                content.classList.add('hidden');
+                trigger.innerHTML = '<span class="text-2xl leading-none">☰</span>';
+                trigger.setAttribute('aria-expanded', 'false');
+            } else {
+                content.classList.remove('hidden');
+                trigger.innerHTML = '<span class="text-2xl leading-none">✕</span>';
+                trigger.setAttribute('aria-expanded', 'true');
+            }
+        };
+
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMenu();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!content.contains(e.target) && !trigger.contains(e.target)) {
+                toggleMenu(true);
+            }
+        });
+
+        content.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => toggleMenu(true));
+        });
     },
 
     setupImageZoom: () => {
@@ -661,7 +697,7 @@ const CoreApp = {
 
                 document.getElementById('reset-deck-btn')?.classList.remove('hidden');
                 CoreApp.renderBoxes();
-                CoreApp.renderDeckOverview(); 
+                CoreApp.renderDeckOverview();
                 StatsUI.renderDifficultyStats();
 
                 status.textContent = `${CoreApp.csvData.length} cartes chargées.`;
@@ -852,6 +888,7 @@ const CoreApp = {
         const container = document.getElementById('leitner-boxes');
         if(!container) return;
         container.innerHTML = '';
+        
         [1, 2, 3, 4, 5].forEach(num => {
             const cards = CoreApp.csvData.filter(c => c.box === num);
             const count = cards.length;
@@ -874,7 +911,7 @@ const CoreApp = {
                 if(cards.length) {
                     SessionManager.start(CoreApp.csvData.filename, cards);
                     CoreApp.startReview();
-                } else alert('Boîte___vide.');
+                } else alert('Boîte vide.');
             });
             container.appendChild(div);
         });
