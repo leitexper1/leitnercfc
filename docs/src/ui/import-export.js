@@ -426,14 +426,28 @@ let cards = [];
 // === Initialisation principale ===
   async function init() {
   const csvPath = getSelectedCsvPath();
+  const sessionRaw = localStorage.getItem('leitner_session_cards');
+  let sessionData = null;
 
-  if (csvPath) {
+  if (sessionRaw) {
+    try {
+      sessionData = JSON.parse(sessionRaw);
+    } catch (e) {
+      console.error("Erreur de lecture de la session locale", e);
+    }
+  }
+
+  // Priorité absolue : Si une session locale existe et correspond au fichier (ou si aucun fichier n'est spécifié)
+  if (sessionData && sessionData.cards && (!csvPath || csvPath.includes(sessionData.filename))) {
+    cards = sessionData.cards;
+    console.log("Données chargées depuis la session active (LocalStorage)");
+  } else if (csvPath) {
     try {
         // Résoudre le chemin CSV en une URL absolue.
         // Ceci est crucial pour le protocole file:// où les requêtes fetch relatives peuvent être restreintes.
         const resolvedCsvPath = new URL(csvPath, window.location.href).href;
         const response = await fetch(resolvedCsvPath);
-      if (!response.ok) throw new Error(`Fichier non trouvé : ${csvPath}`);
+      if (!response.ok) throw new Error(`Fichier distant non trouvé : ${csvPath}`);
       const text = await response.text();
       const normalised = text.replace(/^\uFEFF/, '');
       cards = parseCsvText(normalised);
@@ -442,11 +456,11 @@ let cards = [];
       }
     } catch (err) {
       console.error('Erreur chargement CSV distant :', err);
-      alert('⚠️ Impossible de charger le fichier CSV sélectionné :\n' + err.message + '\n\nUtilisation du stockage local.');
-      cards = JSON.parse(localStorage.getItem('leitnerCards')) || [newCard()];
+      alert('⚠️ Impossible de charger le fichier distant :\n' + err.message + '\n\nUtilisation du stockage local de secours.');
+      cards = (sessionData && sessionData.cards) ? sessionData.cards : (JSON.parse(localStorage.getItem('leitnerCards')) || [newCard()]);
     }
   } else {
-    // Aucun fichier spécifié → fallback local
+    // Aucun fichier spécifié et aucune session active -> fallback sur le stockage historique de l'éditeur
     cards = JSON.parse(localStorage.getItem('leitnerCards')) || [newCard()];
   }
 

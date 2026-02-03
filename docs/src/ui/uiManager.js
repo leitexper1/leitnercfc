@@ -711,7 +711,7 @@ export class UIManager {
         };
 
         if (card) {
-            title.textContent = 'Modifier la carte';
+            title.textContent = 'Modifier la carte actuelle';
             document.getElementById('card-id').value = card.id;
             document.getElementById('card-question').value = card.question;
             document.getElementById('card-answer').value = card.answer;

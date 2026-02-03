@@ -733,6 +733,7 @@ const CoreApp = {
                 
                 CoreApp.csvData = data;
                 CoreApp.csvData.filename = filename;
+                CoreApp.persistSessionDeck();
                 try {
                     CoreApp.validateImageStructure(filename);
                 } catch (e) {
@@ -1261,6 +1262,7 @@ const CoreApp = {
             }, 800);
 
             CoreApp.renderBoxes();
+            CoreApp.persistSessionDeck();
         }
         
         SessionManager.recordResult(isCorrect);
@@ -1276,6 +1278,9 @@ const CoreApp = {
 
         const editor = document.getElementById('card-editor');
         if (editor) {
+            const title = document.getElementById('editor-title');
+            if (title) title.textContent = 'Modifier la carte actuelle';
+
             document.getElementById('card-id').value = card.id;
             document.getElementById('card-question').value = card.question;
             document.getElementById('card-answer').value = card.answer;
@@ -1310,6 +1315,7 @@ const CoreApp = {
             
             CoreApp.showCardUI(card);
             CoreApp.renderDeckOverview();
+            CoreApp.persistSessionDeck();
         }
         CoreApp.closeEditor();
     },
@@ -1329,6 +1335,7 @@ const CoreApp = {
             SessionManager.updateCurrent();
             CoreApp.renderBoxes();
             CoreApp.renderDeckOverview();
+            CoreApp.persistSessionDeck();
             
             if (s.totalCards > 0) CoreApp.startReview();
             else {
@@ -1345,7 +1352,24 @@ const CoreApp = {
         CardPersistence.resetDeckState(CoreApp.csvData.filename, CoreApp.csvData);
         CoreApp.renderBoxes();
         CoreApp.renderDeckOverview();
+        CoreApp.persistSessionDeck();
         alert("Paquet réinitialisé en Boîte 1.");
+    },
+
+    persistSessionDeck: () => {
+        if (!CoreApp.csvData || CoreApp.csvData.length === 0) return;
+        const cards = CoreApp.csvData.map(c => ({
+            question_content: c.question || '',
+            question_content_image: c.qImage || '',
+            answer_content: c.answer || '',
+            answer_content_image: c.aImage || '',
+            box_number: String(c.box || 1),
+            last_reviewed: (c.lastReview ? c.lastReview.split('T')[0] : new Date().toISOString().split('T')[0])
+        }));
+        localStorage.setItem('leitner_session_cards', JSON.stringify({
+            filename: CoreApp.csvData.filename,
+            cards: cards
+        }));
     }
 };
 
